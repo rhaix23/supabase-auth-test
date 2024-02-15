@@ -27,3 +27,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
 npm install
 npm run dev
 ```
+
+## Additional Notes
+Check the documentation for the up-to-date configurations.
