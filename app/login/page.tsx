@@ -50,6 +50,54 @@ export default function Login({
     return redirect("/login?message=Check email to continue sign in process");
   };
 
+  const signInWithGoogle = async () => {
+    "use server";
+
+    const origin = headers().get("origin");
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        redirectTo: `${origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      return redirect("/login?message=Could not authenticate user");
+    }
+
+    return redirect(data.url);
+  }
+
+  const signInWithGithub = async () => {
+    "use server";
+
+    const origin = headers().get("origin");
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        redirectTo: `${origin}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      return redirect("/login?message=Could not authenticate user");
+    }
+
+    return redirect(data.url);
+  }
+
   return (
     <div className="flex-1 flex flex-col w-full px-8 sm:max-w-md justify-center gap-2">
       <Link
@@ -74,41 +122,50 @@ export default function Login({
       </Link>
 
       <form
-        className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-        action={signIn}
+          className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
+          action={signIn}
       >
         <label className="text-md" htmlFor="email">
           Email
         </label>
         <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          name="email"
-          placeholder="you@example.com"
-          required
+            className="rounded-md px-4 py-2 bg-inherit border mb-6"
+            name="email"
+            placeholder="you@example.com"
+            required
         />
         <label className="text-md" htmlFor="password">
           Password
         </label>
         <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          required
+            className="rounded-md px-4 py-2 bg-inherit border"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            required
         />
+        <Link href="/password-reset/request" className="mb-6">
+          Forgot your password?
+        </Link>
         <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
           Sign In
         </button>
+        <button formAction={signInWithGoogle} className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
+          Sign In With Google
+        </button>
+        <button formAction={signInWithGithub} className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
+          Sign In With Github
+        </button>
         <button
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
+            formAction={signUp}
+            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
         >
           Sign Up
         </button>
         {searchParams?.message && (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
-          </p>
+            <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
+              {searchParams.message}
+            </p>
         )}
       </form>
     </div>

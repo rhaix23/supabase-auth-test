@@ -9,6 +9,8 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: session } = await supabase.auth.getSession();
+
   const signOut = async () => {
     "use server";
 
@@ -16,6 +18,8 @@ export default async function AuthButton() {
     await supabase.auth.signOut();
     return redirect("/login");
   };
+
+  // console.log(session);
 
   return user ? (
     <div className="flex items-center gap-4">
